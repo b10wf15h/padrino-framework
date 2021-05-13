@@ -56,7 +56,8 @@ module Padrino
       #
       def path(name, *args)
         params = args.last.is_a?(Hash) ? args.pop : {}
-        candidates = @routes.select { |route| route.name == name }
+        param_keys_txt = params.keys.map(&:to_s)
+        candidates = @routes.select { |route| route.name == name and (route.matcher.names - param_keys_txt).empty? }
         fail InvalidRouteException if candidates.empty?
         route = candidates.sort_by! { |candidate|
           (params.keys.map(&:to_s) - candidate.matcher.names).length }.shift
